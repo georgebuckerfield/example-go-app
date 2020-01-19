@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	//"golang.org/x/net/html"
 )
 
 type page struct {
