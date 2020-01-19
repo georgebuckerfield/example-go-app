@@ -18,7 +18,7 @@ This will do the following:
 
 Terraform will return a CloudFront domain that can be used to point DNS at.
 
-The application runs in an ECS service that is configured to use Fargate spot instances. This allows for easy and cost-effective scaling of the service. The number of instances can be easily dialled up or down in the ECS service, or configured to use service autoscaling. The application is also configured with a CloudFront distribution in front of the app, for offloading requests from the backend. The CloudFront distribution also sends requests for `/images` to an S3 bucket.
+The application runs in an ECS service that is configured to use Fargate spot instances. This allows for easy and cost-effective scaling of the service. The number of instances can be easily dialled up or down in the ECS service, or it could be configured to use service autoscaling. The application is also configured with a CloudFront distribution in front of the app, for offloading requests from the backend. The CloudFront distribution is configured with a second behaviour to send requests for `/images/*` to an S3 bucket.
 
 ### Infrastructure Architecture
 
@@ -37,3 +37,4 @@ The following components are created by the Terraform configs:
 * To keep costs down this stack only implements a single NAT gateway for all three private subnets - this is not ideal for a production environment.
 * The ALB security groups are configured to allow inbound traffic from any IP address - ideally this should be locked down to CloudFront IP ranges, using something like [this](https://aws.amazon.com/blogs/security/how-to-automatically-update-your-security-groups-for-amazon-cloudfront-and-aws-waf-by-using-aws-lambda/).
 * The CloudFront distribution is not setup to use the WAF - this would be an obvious next step.
+* The application is currently designed to run in one of eu-west regions (Ireland, London or Paris). This could be expanded, the additional regions just need to be added to the `alb_logging_accounts` variable in `infra/variables.tf`. The account IDs for each region can be found [here](https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/enable-access-logs.html).
