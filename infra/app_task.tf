@@ -1,14 +1,19 @@
 locals {
   container_definition = {
     name         = "goapp"
-    image        =  "docker.io/georgebuckerfield/example-go-app:latest"
+    image        =  var.app_docker_image
+    cpu = 0
     essential    = true
+    environment  = []
+    mountPoints  = []
     portMappings = [
       {
         containerPort  = 5000
+        hostPort       = 5000
         protocol       =  "tcp"
       }
     ]
+    volumesFrom      = []
     logConfiguration = {
       logDriver =  "awslogs"
       options =  {
@@ -22,7 +27,7 @@ locals {
 }
 
 resource "aws_ecs_task_definition" "goapp" {
-  family = var.ecs_service_name
+  family = var.app_service_name
   network_mode = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu =  256

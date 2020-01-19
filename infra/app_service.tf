@@ -1,10 +1,14 @@
 resource "aws_ecs_cluster" "primary" {
   name = var.ecs_cluster_name
+  capacity_providers = ["FARGATE", "FARGATE_SPOT"]
 }
 resource "aws_ecs_service" "goapp" {
-  name        = var.ecs_service_name
+  name        = var.app_service_name
   cluster     = var.ecs_cluster_name
-  launch_type = "FARGATE"
+  capacity_provider_strategy {
+    capacity_provider = "FARGATE_SPOT"
+    weight = 100
+  }
   network_configuration {
     subnets = aws_subnet.private_subnets.*.id
     security_groups = [aws_security_group.ecs_sg.id]
@@ -19,6 +23,9 @@ resource "aws_ecs_service" "goapp" {
     container_port   = 5000
   }
 
+  depends_on = [
+    aws_lb_listener.https
+  ]
   # Ignore changes in count from autoscaling actions
   lifecycle {
     ignore_changes = [desired_count]
